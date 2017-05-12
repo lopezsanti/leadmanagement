@@ -49,7 +49,7 @@ public class JsoupMoveMailParserTest {
     public void phone() throws Exception {
         JsoupMoveMailParser parser = new JsoupMoveMailParser();
         String phone = parser.getPhone(mailText);
-        assertEquals("(928)897-1194", phone);
+        assertEquals("(928) 897-1194", phone);
     }
 
     @Test

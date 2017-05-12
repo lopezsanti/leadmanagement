@@ -54,12 +54,23 @@ public class JsoupHomesMailParser implements HomesMailParser {
 
     @Override
     public String getPhone(String page) {
+        Pattern phoneFormatter = Pattern.compile("(.*)(...)(...)(....)");
         Document d = Jsoup.parseBodyFragment(page);
         return Optional
                 .ofNullable(d.select("div:contains(Contact Details)"))
                 .map(Elements::first)
                 .map(e -> e.select("p:has(strong:contains(Phone)) > a[href^=tel:]"))
                 .map(Elements::text)
+                .map(t -> t.replaceAll("[\\(\\)\\- ]*", ""))
+                .map(t -> {
+                    Matcher matcher = phoneFormatter.matcher(t);
+                    if (matcher.find()) {
+                        return String.format("%s(%s) %s-%s", matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4));
+                    } else {
+                        return null;
+                    }
+
+                })
                 .orElse(null);
     }
 

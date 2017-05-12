@@ -38,7 +38,7 @@ public class JsoupHarSitePageParserTest {
     @Test
     public void getPhone() throws Exception {
         String phone = new JsoupHarSitePageParser().getPhone(pageText);
-        assertEquals("7133197100", phone);
+        assertEquals("(713) 319-7100", phone);
 
     }
 

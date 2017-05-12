@@ -54,7 +54,19 @@ public class JsoupMoveMailParser implements MoveMailParser {
 
     @Override
     public String getPhone(String page) {
-        return getData(page, phoneInfoPattern);
+        Pattern phoneFormatter = Pattern.compile("(.*)(...)(...)(....)");
+        return Optional.ofNullable(getData(page, phoneInfoPattern))
+                .map(t -> t.replaceAll("[\\(\\)\\- ]*", ""))
+                .map(t -> {
+                    Matcher matcher = phoneFormatter.matcher(t);
+                    if (matcher.find()) {
+                        return String.format("%s(%s) %s-%s", matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4));
+                    } else {
+                        return null;
+                    }
+
+                })
+                .orElse(null);
     }
 
     @Override

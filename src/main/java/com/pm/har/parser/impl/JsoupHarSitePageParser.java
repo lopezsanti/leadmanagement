@@ -9,6 +9,8 @@ import org.jsoup.select.Elements;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class JsoupHarSitePageParser implements HarSitePageParser {
 
@@ -55,12 +57,23 @@ public class JsoupHarSitePageParser implements HarSitePageParser {
 
     @Override
     public String getPhone(String page) {
+        Pattern phoneFormatter = Pattern.compile("(.*)(...)(...)(....)");
         Document d = Jsoup.parse(page);
         return Optional
                 .ofNullable(d.select("td:containsOwn(Phone)").first())
                 .map(Element::parent)
                 .filter(e -> e.children().size() > 1)
                 .map(e -> e.child(1).text())
+                .map(t -> t.replaceAll("[\\(\\)\\- ]*", ""))
+                .map(t -> {
+                    Matcher matcher = phoneFormatter.matcher(t);
+                    if (matcher.find()) {
+                        return String.format("%s(%s) %s-%s", matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4));
+                    } else {
+                        return null;
+                    }
+
+                })
                 .orElse(null);
     }
 

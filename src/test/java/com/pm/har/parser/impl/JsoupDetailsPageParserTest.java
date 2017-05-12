@@ -29,7 +29,7 @@ public class JsoupDetailsPageParserTest {
         pageText = new String(java.nio.file.Files.readAllBytes(resPath), "UTF8");
 
         String listPrice = new JsoupDetailsPageParser().getListPrice(pageText);
-        assertNull(listPrice);
+        assertEquals("$185,001 - $215,000", listPrice);
     }
 
     @Test

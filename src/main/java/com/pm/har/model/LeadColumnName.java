@@ -2,9 +2,11 @@ package com.pm.har.model;
 
 public enum LeadColumnName {
     mailId(true),
+    date,
     comments,
     phone,
-    from,
+    name_from,
+    mail_from,
     zipCode,
     mls,
     listPrice,

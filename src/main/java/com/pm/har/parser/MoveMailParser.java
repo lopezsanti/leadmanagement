@@ -5,6 +5,8 @@ import java.net.URL;
 public interface MoveMailParser {
     String getFrom(String page);
 
+    String getFromName(String page);
+
     String getComments(String page);
 
     String getPhone(String page);

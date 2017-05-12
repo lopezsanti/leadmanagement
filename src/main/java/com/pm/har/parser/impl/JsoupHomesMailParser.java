@@ -3,14 +3,22 @@ package com.pm.har.parser.impl;
 import com.pm.har.parser.HomesMailParser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JsoupHomesMailParser implements HomesMailParser {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Override
     public String getFrom(String page) {
         Document d = Jsoup.parseBodyFragment(page);
@@ -148,5 +156,40 @@ public class JsoupHomesMailParser implements HomesMailParser {
                     .trim();
         }
         return null;
+    }
+
+    @Override
+    public Date getMailDate(String page) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("'Time: 'MM/dd/yy KK:mm a");
+        Document d = Jsoup.parseBodyFragment(page);
+        return Optional
+                .ofNullable(d.select("p:has(strong:contains(Time:))"))
+                .map(Elements::last)
+                .map(Element::text)
+                .map(s -> s.replaceAll("\\xA0", " "))
+                .map(s -> s.replaceAll(" {2,}", " "))
+                .map(source -> {
+                    try {
+                        return dateFormat.parse(source);
+                    } catch (ParseException e) {
+                        logger.warn("Invalid date: {}. Error: {]", source, e.getMessage());
+                        return null;
+                    }
+                })
+                .orElse(null);
+    }
+
+    @Override
+    public String getFromName(String page) {
+        Document d = Jsoup.parseBodyFragment(page);
+        return Optional
+                .ofNullable(d.select("p:has(strong:contains(Full Name:))"))
+                .map(Elements::last)
+                .map(e -> {e.child(0).remove(); return e;})
+                .map(Element::text)
+                .map(s -> s.replaceAll("\\xA0", " "))
+                .map(s -> s.replaceAll(" {2,}", " "))
+                .map(String::trim)
+                .orElse(null);
     }
 }

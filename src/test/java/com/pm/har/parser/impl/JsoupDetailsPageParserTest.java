@@ -41,7 +41,7 @@ public class JsoupDetailsPageParserTest {
     @Test
     public void getMLS() throws Exception {
         String mls = new JsoupDetailsPageParser().getMLS(pageText);
-        assertEquals("82127448 (HAR)", mls);
+        assertEquals("82127448", mls);
     }
 
     @Test

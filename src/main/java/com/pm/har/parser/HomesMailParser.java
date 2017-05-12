@@ -1,6 +1,7 @@
 package com.pm.har.parser;
 
 import java.net.URL;
+import java.util.Date;
 
 public interface HomesMailParser {
     String getFrom(String page);
@@ -19,4 +20,7 @@ public interface HomesMailParser {
 
     String getMLS(String page);
 
+    Date getMailDate(String page);
+
+    String getFromName(String page);
 }

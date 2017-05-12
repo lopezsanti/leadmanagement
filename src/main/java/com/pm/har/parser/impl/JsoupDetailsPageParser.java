@@ -24,13 +24,13 @@ public class JsoupDetailsPageParser implements DetailsPageParser {
     public String getListPrice(String page) {
         Document d = Jsoup.parse(page);
         Element price = Optional
-                .ofNullable(d.select("div.dc_label:containsOwn(Listing Price)").first())
+                .ofNullable(d.select("div.dc_label:containsOwn(Listing Price),div.dc_label:containsOwn(Sold Price Range)").first())
                 .map(Element::parent)
                 .filter(e -> e.children().size() > 1)
                 .map(e -> e.child(1))
                 .orElse(null);
         if (price != null) {
-            price.select("a").remove();
+            price.select("a,div").remove();
             return price.text();
         }
         return null;
@@ -45,6 +45,7 @@ public class JsoupDetailsPageParser implements DetailsPageParser {
                 .filter(e -> e.children().size() > 1)
                 .map(e -> e.child(1))
                 .map(Element::text)
+                .map(t -> t.replaceAll(" \\(HAR\\)", ""))
                 .orElse(null);
     }
 

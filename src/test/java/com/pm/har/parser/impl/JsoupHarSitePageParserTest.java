@@ -20,8 +20,13 @@ public class JsoupHarSitePageParserTest {
     @Test
     public void getFrom() throws Exception {
         String from = new JsoupHarSitePageParser().getFrom(pageText);
-        assertNotNull(from);
-        assertTrue(from.contains("@"));
+        assertEquals("slayton.helen@gmail.com", from);
+    }
+
+    @Test
+    public void getFromName() throws Exception {
+        String from = new JsoupHarSitePageParser().getFromName(pageText);
+        assertEquals("Helen Slayton", from);
     }
 
     @Test

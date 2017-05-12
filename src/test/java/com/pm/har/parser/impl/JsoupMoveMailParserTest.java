@@ -21,7 +21,14 @@ public class JsoupMoveMailParserTest {
     public void from() throws Exception {
         JsoupMoveMailParser parser = new JsoupMoveMailParser();
         String from = parser.getFrom(mailText);
-        assertEquals("bruce bosshard [bosshardeng@aol.com]", from);
+        assertEquals("bosshardeng@aol.com", from);
+    }
+
+    @Test
+    public void fromName() throws Exception {
+        JsoupMoveMailParser parser = new JsoupMoveMailParser();
+        String from = parser.getFromName(mailText);
+        assertEquals("bruce bosshard", from);
     }
 
     @Test

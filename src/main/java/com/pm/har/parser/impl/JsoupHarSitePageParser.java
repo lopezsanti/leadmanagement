@@ -4,20 +4,41 @@ import com.pm.har.parser.HarSitePageParser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
 public class JsoupHarSitePageParser implements HarSitePageParser {
+
     @Override
     public String getFrom(String page) {
         Document d = Jsoup.parse(page);
         return Optional
-                .ofNullable(d.select("td:containsOwn(From)").first())
+                .ofNullable(d.select("td:containsOwn(From)"))
+                .map(Elements::last)
                 .map(Element::parent)
-                .filter(e -> e.children().size() > 1)
-                .map(e -> e.child(1).text())
+                .map(e -> e.child(1))
+                .map(e -> e.select("span"))
+                .map(Elements::last)
+                .map(Element::text)
+                .map(s -> s.replaceAll("[\\[\\] ]*", ""))
+                .orElse(null);
+    }
+
+    @Override
+    public String getFromName(String page) {
+        Document d = Jsoup.parse(page);
+        return Optional
+                .ofNullable(d.select("td:containsOwn(From)"))
+                .map(Elements::last)
+                .map(Element::parent)
+                .map(e -> e.child(1))
+                .map(Element::text)
+                .map(s -> s.replaceAll("\\[.*\\]", ""))
+                .map(s -> s.replaceAll(" {2,}", " "))
+                .map(String::trim)
                 .orElse(null);
     }
 

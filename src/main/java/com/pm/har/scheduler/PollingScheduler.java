@@ -19,7 +19,9 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class PollingScheduler {
@@ -73,7 +75,7 @@ public class PollingScheduler {
                     leadDto = processHomesMail(content, mailId);
                     break;
                 case MOVES:
-                    leadDto = processMovesMail(content, mailId);
+                    leadDto = processMovesMail(content, mailId, message.getSentDate());
                     break;
             }
             if (leadDto == null) {
@@ -89,17 +91,19 @@ public class PollingScheduler {
         logger.info("poll for new mails finished");
     }
 
-    private LeadDto processMovesMail(String content, String mailId) {
+    private LeadDto processMovesMail(String content, String mailId, Date sentDate) {
         return new LeadDto()
                 .put(LeadColumnName.mailId, getMailLink(mailId))
                 .put(LeadColumnName.address, moveMailParser.getAddress(content))
                 .put(LeadColumnName.comments, moveMailParser.getComments(content))
-                .put(LeadColumnName.from, moveMailParser.getFrom(content))
+                .put(LeadColumnName.mail_from, moveMailParser.getFrom(content))
                 .put(LeadColumnName.phone, moveMailParser.getPhone(content))
                 .put(LeadColumnName.listPrice, moveMailParser.getListPrice(content))
                 .put(LeadColumnName.mls, moveMailParser.getMLS(content))
                 .put(LeadColumnName.zipCode, moveMailParser.getZipCode(content))
                 .put(LeadColumnName.source, "move.com")
+                .put(LeadColumnName.date, sentDate.toString())
+                .put(LeadColumnName.name_from, moveMailParser.getFromName(content))
                 ;
     }
 
@@ -108,12 +112,14 @@ public class PollingScheduler {
                 .put(LeadColumnName.mailId, getMailLink(mailId))
                 .put(LeadColumnName.address, homesMailParser.getAddress(content))
                 .put(LeadColumnName.comments, homesMailParser.getComments(content))
-                .put(LeadColumnName.from, homesMailParser.getFrom(content))
+                .put(LeadColumnName.mail_from, homesMailParser.getFrom(content))
                 .put(LeadColumnName.phone, homesMailParser.getPhone(content))
                 .put(LeadColumnName.listPrice, homesMailParser.getListPrice(content))
                 .put(LeadColumnName.mls, homesMailParser.getMLS(content))
                 .put(LeadColumnName.zipCode, homesMailParser.getZipCode(content))
                 .put(LeadColumnName.source, "homes.com")
+                .put(LeadColumnName.date, Optional.ofNullable(homesMailParser.getMailDate(content)).map(Object::toString).orElse(null))
+                .put(LeadColumnName.name_from, homesMailParser.getFromName(content))
                 ;
     }
 
@@ -149,17 +155,20 @@ public class PollingScheduler {
         String listPrice = detailsPageParser.getListPrice(detailsPage);
         String mls = detailsPageParser.getMLS(detailsPage);
         String zipCode = detailsPageParser.getZipCode(detailsPage);
+        String mailDate = Optional.ofNullable(mailParser.getMailDate(content)).map(Object::toString).orElse(null);
 
         return new LeadDto()
                 .put(LeadColumnName.mailId, getMailLink(mailId))
                 .put(LeadColumnName.address, address)
                 .put(LeadColumnName.comments, comments)
-                .put(LeadColumnName.from, from)
+                .put(LeadColumnName.mail_from, from)
                 .put(LeadColumnName.phone, phone)
                 .put(LeadColumnName.listPrice, listPrice)
                 .put(LeadColumnName.mls, mls)
                 .put(LeadColumnName.zipCode, zipCode)
                 .put(LeadColumnName.source, "har.com")
+                .put(LeadColumnName.date, mailDate)
+                .put(LeadColumnName.name_from, searchPageParser.getFromName(content))
                 ;
 
     }

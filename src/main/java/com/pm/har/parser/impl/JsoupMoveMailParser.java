@@ -23,13 +23,16 @@ public class JsoupMoveMailParser implements MoveMailParser {
     private final Pattern mlsInfoPattern = Pattern.compile("MLSID # (.*)<br>");
     private final Pattern detailsLinkInfoPattern = Pattern.compile("View this listing on REALTOR.com.: <a href=\"(.*)\" id=");
 
-    // (\r\n)*
     @Override
     public String getFrom(String page) {
-        String mail = getData(page, this.fromInfoPattern);
+        return getData(page, this.fromInfoPattern);
+    }
+
+    @Override
+    public String getFromName(String page) {
         String firstName = getData(page, this.firstNameInfoPattern);
         String lastName = getData(page, this.lastNameInfoPattern);
-        return String.format("%s %s [%s]", firstName, lastName, mail);
+        return String.format("%s %s", firstName, lastName);
     }
 
     @Override

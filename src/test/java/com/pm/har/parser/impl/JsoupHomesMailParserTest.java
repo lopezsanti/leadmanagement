@@ -4,6 +4,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import static org.junit.Assert.assertEquals;
 
 public class JsoupHomesMailParserTest {
@@ -62,5 +65,18 @@ public class JsoupHomesMailParserTest {
     public void mls() throws Exception {
         String mls = parser.getMLS(mailText);
         assertEquals("90092754", mls);
+    }
+
+    @Test
+    public void mailDate() throws Exception {
+        Date date = new SimpleDateFormat("MM/dd/yy KK:mm a").parse("4/11/2017 3:39 PM");
+        Date mailDate = parser.getMailDate(mailText);
+        assertEquals(date, mailDate);
+    }
+
+    @Test
+    public void fromName() throws Exception {
+        String fromName = parser.getFromName(mailText);
+        assertEquals("lorreyna harris", fromName);
     }
 }

@@ -4,6 +4,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -31,4 +33,10 @@ public class JsoupHarMailParserTest {
         assertNull(url);
     }
 
+    @Test
+    public void mailDate() throws Exception {
+        Date date = new SimpleDateFormat("EEE MM/dd/yy KK:mm a").parse("Wed 05/25/16 11:46 AM");
+        Date mailDate = new JsoupHarMailParser().getMailDate(mailText);
+        assertEquals(date, mailDate);
+    }
 }

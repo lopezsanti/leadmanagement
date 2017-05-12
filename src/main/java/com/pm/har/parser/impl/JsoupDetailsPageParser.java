@@ -23,17 +23,18 @@ public class JsoupDetailsPageParser implements DetailsPageParser {
     @Override
     public String getListPrice(String page) {
         Document d = Jsoup.parse(page);
-        Element price = Optional
+        return Optional
                 .ofNullable(d.select("div.dc_label:containsOwn(Listing Price),div.dc_label:containsOwn(Sold Price Range)").first())
                 .map(Element::parent)
                 .filter(e -> e.children().size() > 1)
                 .map(e -> e.child(1))
+                .map(p -> {
+                    p.select("a,div").remove();
+                    return p;
+                })
+                .map(Element::text)
+                .map(t -> t.replaceAll(" \\(.*\\)", ""))
                 .orElse(null);
-        if (price != null) {
-            price.select("a,div").remove();
-            return price.text();
-        }
-        return null;
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.pm.har.model;
 public enum LeadColumnName {
     mailId(true),
     date,
+    time,
     comments,
     phone,
     name_from,

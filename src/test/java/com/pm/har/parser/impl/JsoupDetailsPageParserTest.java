@@ -35,7 +35,7 @@ public class JsoupDetailsPageParserTest {
     @Test
     public void getListPrice() throws Exception {
         String listPrice = new JsoupDetailsPageParser().getListPrice(pageText);
-        assertEquals("$ 208,500 ($88.42/sqft.)", listPrice);
+        assertEquals("$ 208,500", listPrice);
     }
 
     @Test

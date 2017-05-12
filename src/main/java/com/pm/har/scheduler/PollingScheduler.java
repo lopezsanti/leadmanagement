@@ -19,6 +19,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -48,8 +50,6 @@ public class PollingScheduler {
             initialDelay = 5000
     )
     public void poll() throws IOException, MessagingException, SmartsheetException {
-
-
         logger.info("poll for new mails started");
 
         List<String> mails = mailReader.listIncomingMails();
@@ -92,6 +92,9 @@ public class PollingScheduler {
     }
 
     private LeadDto processMovesMail(String content, String mailId, Date sentDate) {
+        Optional<Date> date = Optional.ofNullable(sentDate);
+        String mailDate = date.map(d -> getDateFromat().format(d)).orElse(null);
+        String mailTime = date.map(d -> getTimeFromat().format(d)).orElse(null);
         return new LeadDto()
                 .put(LeadColumnName.mailId, getMailLink(mailId))
                 .put(LeadColumnName.address, moveMailParser.getAddress(content))
@@ -102,12 +105,16 @@ public class PollingScheduler {
                 .put(LeadColumnName.mls, moveMailParser.getMLS(content))
                 .put(LeadColumnName.zipCode, moveMailParser.getZipCode(content))
                 .put(LeadColumnName.source, "move.com")
-                .put(LeadColumnName.date, sentDate.toString())
+                .put(LeadColumnName.date, mailDate)
+                .put(LeadColumnName.time, mailTime)
                 .put(LeadColumnName.name_from, moveMailParser.getFromName(content))
                 ;
     }
 
     private LeadDto processHomesMail(String content, String mailId) {
+        Optional<Date> date = Optional.ofNullable(homesMailParser.getMailDate(content));
+        String mailDate = date.map(d -> getDateFromat().format(d)).orElse(null);
+        String mailTime = date.map(d -> getTimeFromat().format(d)).orElse(null);
         return new LeadDto()
                 .put(LeadColumnName.mailId, getMailLink(mailId))
                 .put(LeadColumnName.address, homesMailParser.getAddress(content))
@@ -118,7 +125,8 @@ public class PollingScheduler {
                 .put(LeadColumnName.mls, homesMailParser.getMLS(content))
                 .put(LeadColumnName.zipCode, homesMailParser.getZipCode(content))
                 .put(LeadColumnName.source, "homes.com")
-                .put(LeadColumnName.date, Optional.ofNullable(homesMailParser.getMailDate(content)).map(Object::toString).orElse(null))
+                .put(LeadColumnName.date, mailDate)
+                .put(LeadColumnName.time, mailTime)
                 .put(LeadColumnName.name_from, homesMailParser.getFromName(content))
                 ;
     }
@@ -155,7 +163,9 @@ public class PollingScheduler {
         String listPrice = detailsPageParser.getListPrice(detailsPage);
         String mls = detailsPageParser.getMLS(detailsPage);
         String zipCode = detailsPageParser.getZipCode(detailsPage);
-        String mailDate = Optional.ofNullable(mailParser.getMailDate(content)).map(Object::toString).orElse(null);
+        Optional<Date> date = Optional.ofNullable(mailParser.getMailDate(content));
+        String mailDate = date.map(d -> getDateFromat().format(d)).orElse(null);
+        String mailTime = date.map(d -> getTimeFromat().format(d)).orElse(null);
 
         return new LeadDto()
                 .put(LeadColumnName.mailId, getMailLink(mailId))
@@ -168,6 +178,7 @@ public class PollingScheduler {
                 .put(LeadColumnName.zipCode, zipCode)
                 .put(LeadColumnName.source, "har.com")
                 .put(LeadColumnName.date, mailDate)
+                .put(LeadColumnName.time, mailTime)
                 .put(LeadColumnName.name_from, searchPageParser.getFromName(content))
                 ;
 
@@ -177,4 +188,10 @@ public class PollingScheduler {
         return "https://mail.google.com/mail/u/0/#all/" + mailId;
     }
 
+    private DateFormat getDateFromat() {
+        return new SimpleDateFormat("EEE MM/dd/yyyy");
+    }
+    private DateFormat getTimeFromat() {
+        return new SimpleDateFormat("KK:mm a");
+    }
 }

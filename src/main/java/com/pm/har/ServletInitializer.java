@@ -10,7 +10,7 @@ public class ServletInitializer extends SpringBootServletInitializer {
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application
                 .bannerMode(Banner.Mode.OFF)
-                .properties("spring.config.location=file:${catalina.base}/conf/har.properties")
+                .properties("spring.config.location=file:${catalina.base}/conf/lead-scrapper.properties")
                 .sources(LeadScrapperApplication.class);
     }
 

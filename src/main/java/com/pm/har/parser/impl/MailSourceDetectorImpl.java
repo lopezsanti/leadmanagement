@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public class MailSourceDetectorImpl implements MailSourceDetector {
     private Pattern homes = Pattern.compile("homes.com");
     private Pattern har = Pattern.compile("(?i)har.com lead");
-    private Pattern move = Pattern.compile("move.com");
+    private Pattern move = Pattern.compile("automated inquiry sent by a REALTOR.com");
 
     @Nullable
     @Override

@@ -39,7 +39,7 @@ public class SmartSheetServiceImpl implements SmartSheetService {
 
     public void addRow(Long sheetId, LeadDto leadDto) throws SmartsheetException {
         Set<String> knownLeadColumns = Arrays.stream(LeadColumnName.values())
-                .map(Enum::name)
+                .map(LeadColumnName::getColumnHeader)
                 .collect(Collectors.toSet());
 
         List<Column> columnDefinitions = getSheetColumns(sheetId);
@@ -51,7 +51,7 @@ public class SmartSheetServiceImpl implements SmartSheetService {
                 .forEach(d -> rowCellsBuilder
                         .addCell(d.getId(),
                                 Optional.ofNullable(
-                                        leadDto.get(LeadColumnName.valueOf(d.getTitle()))
+                                        leadDto.get(LeadColumnName.getByColumnHeader(d.getTitle()))
                                 ).orElse("")
                         )
                 );
@@ -89,7 +89,7 @@ public class SmartSheetServiceImpl implements SmartSheetService {
     public Long createSheet(String sheetName) throws SmartsheetException {
         List<Column> columns = Arrays.stream(LeadColumnName.values())
                 .map(n -> new Column.AddColumnToSheetBuilder()
-                        .setTitle(n.name()).setPrimary(n.isPrimary())
+                        .setTitle(n.getColumnHeader()).setPrimary(n.isPrimary())
                         .setType(ColumnType.TEXT_NUMBER)
                         .build())
                 .collect(Collectors.toList());

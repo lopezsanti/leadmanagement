@@ -131,8 +131,6 @@ public class GoogleApiMailReader implements MailReader {
     public List<String> findHtmlParts(Part message) throws MessagingException, IOException {
         ArrayList<String> htmls = new ArrayList<>();
 
-//        ((MimeMultipart) ((MimeMultipart) message.getContent()).getBodyPart(0).getContent()).getBodyPart(1).getContentType();
-
         if (message.getContentType().startsWith("text/html")) {
             Object content = message.getContent();
             if (content instanceof String) {
@@ -149,6 +147,27 @@ public class GoogleApiMailReader implements MailReader {
             }
         }
         return htmls;
+    }
+
+    private List<String> findTextParts(Part message) throws MessagingException, IOException {
+        ArrayList<String> textBody = new ArrayList<>();
+
+        if (!message.getContentType().startsWith("text/html")) {
+            Object content = message.getContent();
+            if (content instanceof String) {
+                textBody.add((String) content);
+            }
+        } else {
+            Object content = message.getContent();
+            if (content instanceof MimeMultipart) {
+                MimeMultipart multipart = (MimeMultipart) content;
+                for (int i = 0; i < multipart.getCount(); i++) {
+                    BodyPart part = multipart.getBodyPart(i);
+                    textBody.addAll(findTextParts(part));
+                }
+            }
+        }
+        return textBody;
     }
 
     @Override
@@ -171,5 +190,12 @@ public class GoogleApiMailReader implements MailReader {
 
         return email;
     }
+
+    @Override
+    public String getTextContent(MimeMessage message) throws IOException, MessagingException {
+        List<String> text = findTextParts(message);
+        return StringUtils.collectionToDelimitedString(text, " ");
+    }
+
 
 }

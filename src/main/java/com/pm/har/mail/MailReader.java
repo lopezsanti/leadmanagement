@@ -15,4 +15,6 @@ public interface MailReader {
 
     MimeMessage getMimeMessage(String messageId)
             throws IOException, MessagingException;
+
+    String getTextContent(MimeMessage message) throws IOException, MessagingException;
 }

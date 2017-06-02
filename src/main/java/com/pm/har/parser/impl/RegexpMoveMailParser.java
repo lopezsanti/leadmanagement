@@ -9,19 +9,19 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class JsoupMoveMailParser implements MoveMailParser {
+public class RegexpMoveMailParser implements MoveMailParser {
 
     private final Pattern infoFragmentPattern = Pattern.compile("(?ms)This is an automated inquiry sent by a REALTOR(.*)For questions and support");
-    private final Pattern firstNameInfoPattern = Pattern.compile("First Name: (.*)<br>");
-    private final Pattern lastNameInfoPattern = Pattern.compile("Last Name: (.*)<br>");
-    private final Pattern fromInfoPattern = Pattern.compile("Email Address: (.*)<br>");
-    private final Pattern commentInfoPattern = Pattern.compile("(?ms)Comment:(?:\\r?\\n)*<br>(?:\\r?\\n)*(.*)This consumer inquired");
-    private final Pattern phoneInfoPattern = Pattern.compile("Phone Number: (.*)<br>");
-    private final Pattern addressInfoPattern = Pattern.compile("(?ms)Property Address:<br>(?:</span>)?(.*)MLSID #");
+    private final Pattern firstNameInfoPattern = Pattern.compile("First Name: (.*)");
+    private final Pattern lastNameInfoPattern = Pattern.compile("Last Name: (.*)");
+    private final Pattern fromInfoPattern = Pattern.compile("Email Address: (.*)");
+    private final Pattern commentInfoPattern = Pattern.compile("(?ms)Comment:(?:\\r?\\n)*(.*)This consumer inquired");
+    private final Pattern phoneInfoPattern = Pattern.compile("Phone Number: (.*)");
+    private final Pattern addressInfoPattern = Pattern.compile("(?ms)Property Address:(?:\\r?\\n)*(.*)MLSID #");
     private final Pattern zipAddressPattern = Pattern.compile("(?ms)(\\d+)$");
-    private final Pattern priceInfoPattern = Pattern.compile("(?m)Basic Property Attributes:<br>(?:\\r?\\n)*(.*)<br>");
-    private final Pattern mlsInfoPattern = Pattern.compile("MLSID # (.*)<br>");
-    private final Pattern detailsLinkInfoPattern = Pattern.compile("View this listing on REALTOR.com.: <a href=\"(.*)\" id=");
+    private final Pattern priceInfoPattern = Pattern.compile("(?m)Basic Property Attributes:(?:\\r?\\n)*(.*)");
+    private final Pattern mlsInfoPattern = Pattern.compile("MLSID # (.*)");
+    private final Pattern detailsLinkInfoPattern = Pattern.compile("View this listing on REALTOR.com.: (.*)");
 
     @Override
     public String getFrom(String page) {

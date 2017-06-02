@@ -19,64 +19,64 @@ public class JsoupMoveMailParserTest {
 
     @Test
     public void from() throws Exception {
-        JsoupMoveMailParser parser = new JsoupMoveMailParser();
+        RegexpMoveMailParser parser = new RegexpMoveMailParser();
         String from = parser.getFrom(mailText);
-        assertEquals("bosshardeng@aol.com", from);
+        assertEquals("hayleyroberts47@gmail.com", from);
     }
 
     @Test
     public void fromName() throws Exception {
-        JsoupMoveMailParser parser = new JsoupMoveMailParser();
+        RegexpMoveMailParser parser = new RegexpMoveMailParser();
         String from = parser.getFromName(mailText);
-        assertEquals("bruce bosshard", from);
+        assertEquals("Hayley Roberts", from);
     }
 
     @Test
     public void comment() throws Exception {
-        JsoupMoveMailParser parser = new JsoupMoveMailParser();
+        RegexpMoveMailParser parser = new RegexpMoveMailParser();
         String comments = parser.getComments(mailText);
-        assertEquals("I would like more information regarding the property at 22109 Iron Knoll Dr, Kingwood", comments);
+        assertEquals("I would like more information regarding the property at 760 Memorial Mews St Apt D, Houston", comments);
     }
 
     @Test
     public void address() throws Exception {
-        JsoupMoveMailParser parser = new JsoupMoveMailParser();
+        RegexpMoveMailParser parser = new RegexpMoveMailParser();
         String address = parser.getAddress(mailText);
-        assertEquals("22109 Iron Knoll Dr , Kingwood, Texas 77339", address);
+        assertEquals("760 Memorial Mews St Apt D, Houston, Texas 77079", address);
     }
 
     @Test
     public void phone() throws Exception {
-        JsoupMoveMailParser parser = new JsoupMoveMailParser();
+        RegexpMoveMailParser parser = new RegexpMoveMailParser();
         String phone = parser.getPhone(mailText);
-        assertEquals("(928) 897-1194", phone);
+        assertEquals("(325) 277-7404", phone);
     }
 
     @Test
     public void zipCode() throws Exception {
-        JsoupMoveMailParser parser = new JsoupMoveMailParser();
+        RegexpMoveMailParser parser = new RegexpMoveMailParser();
         String zipCode = parser.getZipCode(mailText);
-        assertEquals("77339", zipCode);
+        assertEquals("77079", zipCode);
     }
 
     @Test
     public void price() throws Exception {
-        JsoupMoveMailParser parser = new JsoupMoveMailParser();
+        RegexpMoveMailParser parser = new RegexpMoveMailParser();
         String listPrice = parser.getListPrice(mailText);
-        assertEquals("$2,250", listPrice);
+        assertEquals("$1,025", listPrice);
     }
 
     @Test
     public void mls() throws Exception {
-        JsoupMoveMailParser parser = new JsoupMoveMailParser();
+        RegexpMoveMailParser parser = new RegexpMoveMailParser();
         String mls = parser.getMLS(mailText);
-        assertEquals("22249049", mls);
+        assertEquals("45352345", mls);
     }
 
     @Test
     public void link() throws Exception {
-        JsoupMoveMailParser parser = new JsoupMoveMailParser();
+        RegexpMoveMailParser parser = new RegexpMoveMailParser();
         URL link = parser.getDetailsLink(mailText);
-        assertEquals("http://www.realtor.com/realestateandhomes-detail/M8989381448", link.toString());
+        assertEquals("http://www.realtor.com/realestateandhomes-detail/M8871937478", link.toString());
     }
 }

@@ -1,5 +1,6 @@
 package com.pm.har.scheduler;
 
+import com.google.api.client.util.IOUtils;
 import com.pm.har.mail.MailReader;
 import com.pm.har.model.LeadColumnName;
 import com.pm.har.model.LeadDto;
@@ -15,19 +16,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import javax.mail.Address;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class PollingScheduler {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+    private Logger mailLogger = LoggerFactory.getLogger("mail");
 
     private HarMailParser mailParser = new JsoupHarMailParser();
     private HarSitePageParser searchPageParser = new JsoupHarSitePageParser();
@@ -35,7 +42,7 @@ public class PollingScheduler {
     private PageFetcher fetcher = new ApachePageFetcher();
 
     private HomesMailParser homesMailParser = new JsoupHomesMailParser();
-    private MoveMailParser moveMailParser = new JsoupMoveMailParser();
+    private MoveMailParser moveMailParser = new RegexpMoveMailParser();
 
     @Autowired
     private MailReader mailReader;
@@ -61,9 +68,21 @@ public class PollingScheduler {
             }
             MimeMessage message = mailReader.getMimeMessage(mailId);
             String content = mailReader.getHtmlContent(message);
+            if (content.isEmpty()) {
+                content = mailReader.getTextContent(message);
+            }
             MailSourceDetector.Source source = mailSourceDetector.detectSource(content);
             if (source == null) {
                 logger.warn("Mail source not detected: mailId={} from={}", mailId, message.getFrom());
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream(102400);
+                IOUtils.copy(message.getInputStream(), outputStream);
+                outputStream.close();
+                mailLogger.info("from {}, content={}",
+                        Arrays.stream(message.getFrom())
+                        .map(Address::toString)
+                        .collect(Collectors.joining("; ")),
+                        Base64.getEncoder().encodeToString(outputStream.toByteArray())
+                );
                 continue;
             }
             LeadDto leadDto = null;

@@ -9,6 +9,8 @@ public interface MailSourceDetector {
     enum Source {
         HAR,
         HOMES,
-        MOVES
+        MOVES,
+        CHRON,
+        WOLF_NET
     }
 }

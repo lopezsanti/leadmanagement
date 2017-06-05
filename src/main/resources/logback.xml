@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+    <property name="MAIL_LOG_FILE" value="${CATALINA_BASE:-${java.io.tmpdir:-/tmp}}/logs/mail.log}"/>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <appender name="mail" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${MAIL_LOG_FILE}</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%d{HH:mm:ss.SSS} %m%n</Pattern>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${MAIL_LOG_FILE}-%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <maxHistory>2</maxHistory>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>20MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+    <logger name="mail" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="mail" />
+    </logger>
+
+</configuration>

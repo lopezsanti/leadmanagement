@@ -43,6 +43,7 @@ public class PollingScheduler {
 
     private HomesMailParser homesMailParser = new JsoupHomesMailParser();
     private MoveMailParser moveMailParser = new RegexpMoveMailParser();
+    private WolfMailParser wolfMailParser = new JsoupWolfMailParser();
 
     @Autowired
     private MailReader mailReader;
@@ -87,14 +88,18 @@ public class PollingScheduler {
             }
             LeadDto leadDto = null;
             switch (source) {
+                case CHRON:
                 case HAR:
-                    leadDto = processHarMail(content, mailId);
+                    leadDto = processHarMail(content, mailId, source);
                     break;
                 case HOMES:
                     leadDto = processHomesMail(content, mailId);
                     break;
                 case MOVES:
                     leadDto = processMovesMail(content, mailId, message.getSentDate());
+                    break;
+                case WOLF_NET:
+                    leadDto = processWolfMail(content, mailId, message.getSentDate());
                     break;
             }
             if (leadDto == null) {
@@ -130,6 +135,26 @@ public class PollingScheduler {
                 ;
     }
 
+    private LeadDto processWolfMail(String content, String mailId, Date sentDate) {
+        Optional<Date> date = Optional.ofNullable(sentDate);
+        String mailDate = date.map(d -> getDateFromat().format(d)).orElse(null);
+        String mailTime = date.map(d -> getTimeFromat().format(d)).orElse(null);
+        return new LeadDto()
+                .put(LeadColumnName.mailId, getMailLink(mailId))
+                .put(LeadColumnName.address, wolfMailParser.getAddress(content))
+                .put(LeadColumnName.comments, wolfMailParser.getComments(content))
+                .put(LeadColumnName.mail_from, wolfMailParser.getFrom(content))
+                .put(LeadColumnName.phone, wolfMailParser.getPhone(content))
+                .put(LeadColumnName.listPrice, wolfMailParser.getListPrice(content))
+                .put(LeadColumnName.mls, wolfMailParser.getMLS(content))
+                .put(LeadColumnName.zipCode, wolfMailParser.getZipCode(content))
+                .put(LeadColumnName.source, "WolfNet")
+                .put(LeadColumnName.date, mailDate)
+                .put(LeadColumnName.time, mailTime)
+                .put(LeadColumnName.name_from, wolfMailParser.getFromName(content))
+                ;
+    }
+
     private LeadDto processHomesMail(String content, String mailId) {
         Optional<Date> date = Optional.ofNullable(homesMailParser.getMailDate(content));
         String mailDate = date.map(d -> getDateFromat().format(d)).orElse(null);
@@ -150,7 +175,7 @@ public class PollingScheduler {
                 ;
     }
 
-    private LeadDto processHarMail(String content, String mailId) {
+    private LeadDto processHarMail(String content, String mailId, MailSourceDetector.Source source) {
         URL viewUrl = mailParser.getViewUrl(content);
         if (viewUrl == null) {
             logger.info("Invalid message id={} skipped", mailId);
@@ -195,7 +220,7 @@ public class PollingScheduler {
                 .put(LeadColumnName.listPrice, listPrice)
                 .put(LeadColumnName.mls, mls)
                 .put(LeadColumnName.zipCode, zipCode)
-                .put(LeadColumnName.source, "har.com")
+                .put(LeadColumnName.source, source == MailSourceDetector.Source.HAR ? "har.com" : "chron.com")
                 .put(LeadColumnName.date, mailDate)
                 .put(LeadColumnName.time, mailTime)
                 .put(LeadColumnName.name_from, searchPageParser.getFromName(content))

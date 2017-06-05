@@ -115,7 +115,11 @@ public class RegexpMoveMailParser implements MoveMailParser {
 
     @Override
     public String getListPrice(String page) {
-        return getData(page, priceInfoPattern);
+        return Optional
+                .ofNullable(getData(page, priceInfoPattern))
+                .map(p -> p.replaceAll(",", ""))
+                .orElse(null)
+                ;
     }
 
     @Override

@@ -58,7 +58,7 @@ public class JsoupHomesMailParserTest {
     @Test
     public void price() throws Exception {
         String listPrice = parser.getListPrice(mailText);
-        assertEquals("$169,000.00", listPrice);
+        assertEquals("$169000.00", listPrice);
     }
 
     @Test

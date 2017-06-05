@@ -140,7 +140,8 @@ public class JsoupHomesMailParser implements HomesMailParser {
         Matcher matcher = pattern.matcher(data);
         if (matcher.find()) {
             return matcher.group(1)
-                    .replaceAll("\\xA0", " ") // &nbsp;
+                    .replaceAll("\\xA0", "") // &nbsp;
+                    .replaceAll(",", "")
                     .trim();
         }
         return null;

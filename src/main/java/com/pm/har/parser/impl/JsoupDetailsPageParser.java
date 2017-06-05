@@ -34,6 +34,7 @@ public class JsoupDetailsPageParser implements DetailsPageParser {
                 })
                 .map(Element::text)
                 .map(t -> t.replaceAll(" \\(.*\\)", ""))
+                .map(t -> t.replaceAll(",", ""))
                 .orElse(null);
     }
 

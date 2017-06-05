@@ -58,7 +58,7 @@ public class JsoupWolfMailParserTest {
     @Test
     public void price() throws Exception {
         String listPrice = parser.getListPrice(mailText);
-        assertEquals("$210,000", listPrice);
+        assertEquals("$210000", listPrice);
     }
 
     @Test

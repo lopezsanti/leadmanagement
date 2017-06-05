@@ -119,6 +119,7 @@ public class JsoupWolfMailParser implements WolfMailParser {
                 .ofNullable(d.select("td:containsOwn(Listing Price)").first())
                 .map(Element::nextElementSibling)
                 .map(Element::text)
+                .map(p -> p.replaceAll(",", ""))
                 .orElse(null)
                 ;
     }

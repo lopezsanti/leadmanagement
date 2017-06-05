@@ -63,7 +63,7 @@ public class JsoupMoveMailParserTest {
     public void price() throws Exception {
         RegexpMoveMailParser parser = new RegexpMoveMailParser();
         String listPrice = parser.getListPrice(mailText);
-        assertEquals("$1,025", listPrice);
+        assertEquals("$1025", listPrice);
     }
 
     @Test

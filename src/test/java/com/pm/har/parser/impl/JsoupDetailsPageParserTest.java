@@ -29,13 +29,13 @@ public class JsoupDetailsPageParserTest {
         pageText = new String(java.nio.file.Files.readAllBytes(resPath), "UTF8");
 
         String listPrice = new JsoupDetailsPageParser().getListPrice(pageText);
-        assertEquals("$185,001 - $215,000", listPrice);
+        assertEquals("$185001 - $215000", listPrice);
     }
 
     @Test
     public void getListPrice() throws Exception {
         String listPrice = new JsoupDetailsPageParser().getListPrice(pageText);
-        assertEquals("$ 208,500", listPrice);
+        assertEquals("$ 208500", listPrice);
     }
 
     @Test

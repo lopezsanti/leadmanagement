@@ -12,6 +12,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -172,7 +173,7 @@ public class JsoupHomesMailParser implements HomesMailParser {
 
     @Override
     public Date getMailDate(String page) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("'Time: 'MM/dd/yy KK:mm a");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("'Time: 'MM/dd/yy KK:mm a", Locale.US);
         Document d = Jsoup.parseBodyFragment(page);
         return Optional
                 .ofNullable(d.select("p:has(strong:contains(Time:))"))

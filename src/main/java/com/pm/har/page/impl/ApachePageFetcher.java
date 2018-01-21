@@ -17,6 +17,7 @@ import org.apache.http.message.BasicNameValuePair;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -38,10 +39,17 @@ public class ApachePageFetcher implements PageFetcher, Closeable {
     @Override
     public String fetch(URL url) {
         try {
-            HttpUriRequest request = new HttpGet(url.toString());
+            URI uri;
+            try {
+                uri = url.toURI();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+            HttpUriRequest request = new HttpGet(uri);
             request.addHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8");
             request.addHeader("Accept-Encoding", "gzip, deflate, sdch");
-            request.addHeader("Referer", url.toString());
+            request.addHeader("Referer", uri.toString());
             request.addHeader("User-Agent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.111 Safari/537.36");
 
 

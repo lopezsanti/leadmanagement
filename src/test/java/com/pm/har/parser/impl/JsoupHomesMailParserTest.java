@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 
@@ -69,7 +70,7 @@ public class JsoupHomesMailParserTest {
 
     @Test
     public void mailDate() throws Exception {
-        Date date = new SimpleDateFormat("MM/dd/yy KK:mm a").parse("4/11/2017 3:39 PM");
+        Date date = new SimpleDateFormat("MM/dd/yy KK:mm a", Locale.US).parse("4/11/2017 3:39 PM");
         Date mailDate = parser.getMailDate(mailText);
         assertEquals(date, mailDate);
     }

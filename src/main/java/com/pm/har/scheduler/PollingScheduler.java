@@ -24,11 +24,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -233,9 +229,9 @@ public class PollingScheduler {
     }
 
     private DateFormat getDateFromat() {
-        return new SimpleDateFormat("EEE MM/dd/yyyy");
+        return new SimpleDateFormat("EEE MM/dd/yyyy", Locale.US);
     }
     private DateFormat getTimeFromat() {
-        return new SimpleDateFormat("KK:mm a");
+        return new SimpleDateFormat("KK:mm a", Locale.US);
     }
 }

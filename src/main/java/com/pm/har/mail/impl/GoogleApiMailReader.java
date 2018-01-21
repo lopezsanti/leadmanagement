@@ -11,6 +11,8 @@ import com.google.api.services.gmail.model.Message;
 import com.google.api.services.gmail.model.ModifyMessageRequest;
 import com.pm.har.mail.MailReader;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class GoogleApiMailReader implements MailReader {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     @Qualifier("googleAccessTokenProvider")
@@ -61,6 +64,10 @@ public class GoogleApiMailReader implements MailReader {
     @Override
     public List<String> listIncomingMails() throws IOException {
         Gmail gmail = getGmailService();
+        if (gmail == null) {
+            logger.warn("Mail processing aborted due to configuration error");
+            return Collections.emptyList();
+        }
         List<String> messageIds = new ArrayList<>();
         String nextPageToken = null;
         do {
@@ -98,8 +105,8 @@ public class GoogleApiMailReader implements MailReader {
     }
 
 
-    @NotNull
     public Gmail getGmailService() throws IOException {
+        logger.info("getGmailService. Source label: '{}', target label: '{}'", sourceLabel, targetLabel);
         OAuth2AccessToken accessToken = restTemplate.getAccessToken();
         GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken.getValue());
         credential.setExpirationTimeMilliseconds(accessToken.getExpiration().getTime());
@@ -119,10 +126,20 @@ public class GoogleApiMailReader implements MailReader {
             sourceLabelId = labels.stream()
                     .filter(l -> l.getName().equals(sourceLabel))
                     .map(Label::getId).findAny().orElse(null);
+            if (sourceLabelId == null) {
+                logger.error("Configured source label '{}' not found. Available labels are '{}'",
+                        sourceLabel, StringUtils.collectionToCommaDelimitedString(labels));
+                return null;
+            }
 
             targetLabelId = labels.stream()
                     .filter(l -> l.getName().equals(targetLabel))
                     .map(Label::getId).findAny().orElse(null);
+            if (targetLabelId == null) {
+                logger.error("Configured target label '{}' not found. Available labels are '{}'",
+                        targetLabel, StringUtils.collectionToCommaDelimitedString(labels));
+                return null;
+            }
         }
 
         return gmail;

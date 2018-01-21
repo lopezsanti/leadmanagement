@@ -13,6 +13,7 @@ import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Optional;
 
 public class JsoupHarMailParser implements HarMailParser {
@@ -36,7 +37,7 @@ public class JsoupHarMailParser implements HarMailParser {
 
     @Override
     public Date getMailDate(String page) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MM/dd/yy KK:mm a");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MM/dd/yy KK:mm a", Locale.US);
         Document d = Jsoup.parseBodyFragment(page);
         return Optional
                 .ofNullable(d.select("td:contains(Sent)"))
